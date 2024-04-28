@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Open Sans'
+      rel='stylesheet'>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  </head>
+
+  <body>
+    <div class="back blur_back">
+    </div>
+    <div class="back front_back">
+      <div id="time">
+        <a class="clock blur" contentEditable role='textbox'
+          aria-multiline='true'>11:59</a>
+        <a class="clock" contentEditable role='textbox'
+          aria-multiline='true'>11:59</a>
+      </div>
+      <div id="weather">
+        <a class="temperatur blur" contentEditable role='textbox'
+          aria-multiline='true'>10°C</a>
+        <a class="temperatur" contentEditable role='textbox'
+          aria-multiline='true'>10°C</a>
+      </div>
+    </div>
+    <script>
+      backgroundList = [];
+      backgroundCounter = 0;
+    function getBackgroundList(){
+      let imageUrl = '/api/getImageList';
+
+      $.get(imageUrl, function (data, status) {
+        backgroundList = data;
+        setBackground();
+      });
+    }
+
+    function setBackground(){
+      url = backgroundList[backgroundCounter];
+      console.debug("List", backgroundList);
+      console.debug("Length", backgroundList.length);
+      console.debug("Counter", backgroundCounter);
+      console.debug("Url", url);
+      
+
+      $('.back').css(
+        "background-image",
+        "url('/static/backgrounds/" + url + "')"
+      )
+      backgroundCounter += 1;
+      if(backgroundCounter >= backgroundList.length){
+        backgroundCounter = 0;
+      }
+      setTimeout(setBackground, 1000 * 60);
+      //setTimeout(setBackground, 1000 * 5);
+    }
+
+    function showTime() {
+      // to get current time/ date.
+      var date = new Date();
+      // to get the current hour
+      var h = date.getHours();
+      // to get the current minutes
+      var m = date.getMinutes();
+      //to get the current second
+      var s = date.getSeconds();
+      // AM, PM setting
+
+      h = (h < 10) ? h = "0" + h : h;
+      m = (m < 10) ? m = "0" + m : m;
+      s = (s < 10) ? s = "0" + s : s;
+
+      //putting time in one variable
+      var time = h + ":" + m;
+      //putting time in our div
+      $('.clock').html(time);
+      //to change time in every seconds
+      setTimeout(showTime, 1000);
+    }
+
+    function getWeather() {
+      let weather_url = "/api/getTemperatur";
+      $.get(weather_url, function (data, status) {
+        console.debug(status);
+        console.debug(data);
+        let temperatur = Number(data);
+        $('.temperatur').html(
+          //'<span class="material-symbols-outlined">' + 
+          //"sunny" + 
+          //'</span>' + 
+          '&nbsp;' +
+          temperatur.toFixed(1) + "°C");
+
+      });
+    }
+
+    getWeather();
+    showTime();
+    getBackgroundList();
+
+  </script>
+
+    <style>
+    body {
+      background: black;
+    }
+
+    a {
+      color: white;
+      text-shadow: 0.02em 0.02em 0.05em rgba(0, 0, 0, 0.2);
+      font-family: 'Open Sans';
+    }
+
+    .back {
+      overflow: hidden;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: center; 
+      background-size: contain;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .blur_back {
+      background-repeat: repeat;
+      filter: blur(100em);
+      -webkit-filter: blur(100em);
+    }
+
+    .clock {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      font-size: 25vh;
+      position: absolute;
+      bottom: 10%;
+      width: 100%;
+    }
+
+    .temperatur {
+      display: flex;
+      justify-content: center;
+
+      font-size: 10vh;
+      position: absolute;
+      bottom: 4vw;
+      left: 4vw;
+    }
+
+    .blur {
+      color: rgba(0, 0, 0, 0.7);
+      -webkit-filter: blur(0.15em);
+      filter: blur(0.1em);
+    }
+  </style>
+  </body>
+
+</html>

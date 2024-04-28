@@ -1,0 +1,6 @@
+flask:
+  port: 5000
+
+hass-io:
+  host: http://192.168.0.5:8123
+  token: Bearer XXXXXXXXXXXXXXXXXXXXXXx
